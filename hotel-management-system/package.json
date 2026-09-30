@@ -1,0 +1,26 @@
+{
+  "name": "hotel-management-system",
+  "version": "1.0.0",
+  "description": "A complete hotel management system with authentication and database integration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "hotel",
+    "management",
+    "booking",
+    "authentication"
+  ],
+  "author": "Hotel Management",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3"
+  }
+}
