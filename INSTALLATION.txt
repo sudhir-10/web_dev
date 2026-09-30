@@ -1,0 +1,438 @@
+================================================================================
+HOTEL MANAGEMENT SYSTEM - INSTALLATION & SETUP GUIDE
+================================================================================
+
+
+SYSTEM REQUIREMENTS
+===================
+
+MINIMUM REQUIREMENTS:
+- Operating System: Windows, Mac, or Linux
+- Node.js: Version 14 or higher
+- Memory: 512 MB RAM
+- Disk Space: 100 MB free space
+- Network: Internet connection for initial npm install
+
+RECOMMENDED:
+- Node.js: Version 16 or higher
+- Memory: 2 GB RAM or more
+- Disk Space: 500 MB free space
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+
+
+BEFORE YOU START
+================
+
+1. Verify Node.js Installation
+   Open terminal/command prompt and run:
+   node --version
+   npm --version
+   
+   Both should return version numbers. If not, install Node.js from nodejs.org
+
+2. Download the Package
+   You should have: hotel-management-system.zip
+   Location should be easily accessible
+
+3. Verify Disk Space
+   Ensure you have at least 100 MB free disk space
+
+
+STEP-BY-STEP INSTALLATION
+==========================
+
+STEP 1: EXTRACT THE ZIP FILE
+----------------------------
+
+Windows:
+  1. Right-click on hotel-management-system.zip
+  2. Select "Extract All"
+  3. Choose destination folder
+  4. Click Extract
+
+Mac/Linux:
+  1. Open terminal
+  2. Navigate to download directory: cd ~/Downloads
+  3. Run: unzip hotel-management-system.zip
+
+Result: A folder named "hotel-management" will be created
+
+
+STEP 2: NAVIGATE TO PROJECT FOLDER
+-----------------------------------
+
+Windows (Command Prompt):
+  cd C:\path\to\hotel-management
+
+Windows (PowerShell):
+  cd C:\path\to\hotel-management
+
+Mac/Linux (Terminal):
+  cd ~/path/to/hotel-management
+
+You should see these files:
+  - server.js
+  - database.js
+  - package.json
+  - README.txt
+  - middleware/
+  - routes/
+  - public/
+
+
+STEP 3: INSTALL DEPENDENCIES
+----------------------------
+
+In terminal/command prompt, run:
+  npm install
+
+This will:
+  1. Read package.json file
+  2. Download all required libraries
+  3. Create node_modules folder
+  4. Show installation progress
+
+Wait for completion - should take 1-3 minutes depending on internet speed.
+
+Expected output:
+  added XX packages in XXXms
+
+If you see errors:
+  - Check internet connection
+  - Try running again
+  - For permission errors: use sudo npm install (Mac/Linux only)
+
+
+STEP 4: START THE SERVER
+------------------------
+
+In the same terminal, run:
+  npm start
+
+Expected output:
+  ✓ Connected to SQLite database
+  🏨 Hotel Management System running on http://localhost:5000
+  Environment: development
+
+If you see "Port already in use" error:
+  PORT=3000 npm start
+  (This changes the port from 5000 to 3000)
+
+Leave this terminal window open - server must be running!
+
+
+STEP 5: OPEN IN BROWSER
+-----------------------
+
+1. Open your web browser (Chrome, Firefox, Safari, Edge)
+2. Go to: http://localhost:5000
+3. You should see the Hotel Management System login page
+
+If page doesn't load:
+  - Wait 10 seconds for server to fully start
+  - Check browser console for errors (F12)
+  - Check terminal for server errors
+
+
+STEP 6: LOGIN
+------------
+
+Use these default credentials:
+
+Admin Login:
+  Email: admin@hotel.com
+  Password: admin123
+
+Staff Login:
+  Email: staff@hotel.com
+  Password: staff123
+
+Guest Login:
+  Email: guest@hotel.com
+  Password: guest123
+
+After logging in, you should see the dashboard!
+
+
+INSTALLATION COMPLETE!
+======================
+
+Your system is now running. You can:
+  1. Explore the features
+  2. Create new rooms
+  3. Make bookings
+  4. Create new users (as admin)
+  5. Test all functionalities
+
+
+OPTIONAL CONFIGURATION
+======================
+
+CHANGE PORT (if 5000 is already in use):
+
+Option 1 - Set environment variable:
+  Windows:  set PORT=3000 && npm start
+  Mac/Linux: PORT=3000 npm start
+
+Option 2 - Edit server.js:
+  Open server.js in text editor
+  Find: const PORT = process.env.PORT || 5000;
+  Change to: const PORT = 3000;
+  Save and run: npm start
+
+RESET DATABASE:
+
+If you want to start fresh:
+  1. Stop the server (Ctrl+C in terminal)
+  2. Delete hotel.db file
+  3. Run: npm start
+  4. Database will be recreated with default data
+
+CHANGE THEME/COLORS:
+
+Edit colors in public/index.html:
+  Find the :root section in the <style> tag
+  Modify color variables:
+    --primary: #1a365d
+    --secondary: #2d5a8c
+    --accent: #f59e0b
+
+
+COMMON ISSUES & SOLUTIONS
+==========================
+
+ISSUE: "command not found: node"
+SOLUTION:
+  Node.js is not installed
+  Download from nodejs.org
+  Install and restart terminal
+
+ISSUE: "npm ERR! code EACCES"
+SOLUTION:
+  Permission error
+  Run: sudo npm install (Mac/Linux)
+  Or run terminal as Administrator (Windows)
+
+ISSUE: "Port 5000 already in use"
+SOLUTION:
+  Run: PORT=3000 npm start
+  Or kill the process using port 5000
+
+ISSUE: "Error: Cannot find module 'express'"
+SOLUTION:
+  Dependencies not installed
+  Run: rm -rf node_modules
+  Then: npm install
+
+ISSUE: "Error: ENOENT: no such file or directory 'hotel.db'"
+SOLUTION:
+  This is normal on first run
+  Database will be created automatically
+  Just wait a few seconds
+
+ISSUE: "Cannot login with provided credentials"
+SOLUTION:
+  Check email spelling (case-sensitive)
+  Use exact credentials: admin@hotel.com / admin123
+  Clear browser cache
+  Try private/incognito window
+
+ISSUE: Page blank or not loading
+SOLUTION:
+  Check terminal for server errors
+  Verify server is running
+  Wait 10 seconds after starting
+  Hard refresh browser (Ctrl+F5 or Cmd+Shift+R)
+  Check browser console for errors (F12)
+
+
+SYSTEM FILES EXPLAINED
+======================
+
+server.js - Main application server
+  - Starts Express server
+  - Loads routes
+  - Handles basic configuration
+
+database.js - Database setup
+  - Creates SQLite database
+  - Initializes tables
+  - Inserts default data
+
+package.json - Project configuration
+  - Lists all dependencies
+  - Script definitions
+  - Project metadata
+
+middleware/auth.js - Authentication
+  - JWT token verification
+  - Role-based access control
+  - Token generation
+
+routes/auth.js - Authentication API
+  - Login and registration
+  - Password management
+
+routes/rooms.js - Room API
+  - Room CRUD operations
+  - Room search
+
+routes/bookings.js - Booking API
+  - Booking CRUD operations
+  - Availability checking
+
+routes/users.js - User management API
+  - User CRUD operations
+  - Password reset
+
+public/index.html - Web interface
+  - HTML structure
+  - CSS styling
+  - JavaScript logic
+  - All frontend code in one file
+
+
+NEXT STEPS
+==========
+
+1. EXPLORE THE INTERFACE
+   - Login as admin
+   - Navigate through all pages
+   - Try creating rooms and bookings
+
+2. READ DOCUMENTATION
+   - README.txt - Full documentation
+   - API_REFERENCE.txt - API endpoints
+   - DATABASE_STRUCTURE.sql - Database info
+   - configuration.json - Configuration options
+
+3. TEST FEATURES
+   - Create new room
+   - Make a booking
+   - Create new user
+   - Search rooms
+   - View statistics
+
+4. CUSTOMIZE
+   - Change colors and branding
+   - Add new features
+   - Modify database schema
+   - Integrate with other systems
+
+5. DEPLOY (When ready)
+   - Move to production server
+   - Use PostgreSQL database
+   - Enable HTTPS
+   - Set up backups
+   - Monitor performance
+
+
+SUPPORT RESOURCES
+=================
+
+If you have issues, check:
+
+1. Terminal/Console Errors
+   - Look at server terminal for error messages
+   - Open browser console (F12) for JavaScript errors
+
+2. Documentation Files
+   - README.txt - General information
+   - API_REFERENCE.txt - How to use API
+   - DATABASE_STRUCTURE.sql - Database details
+   - configuration.json - Configuration examples
+
+3. Browser Developer Tools
+   - Press F12 in browser
+   - Check Network tab for API responses
+   - Check Console tab for errors
+
+4. Common Troubleshooting
+   - Restart server
+   - Clear browser cache
+   - Delete database and restart
+   - Reinstall dependencies
+
+
+STOPPING THE SERVER
+===================
+
+To stop the server, in the terminal window:
+  Press: Ctrl+C
+
+You will see a prompt. The server will stop.
+
+To start again:
+  Run: npm start
+
+
+BACKING UP YOUR DATA
+====================
+
+Before making changes:
+
+1. Stop the server (Ctrl+C)
+2. Copy hotel.db file:
+   - Windows: Copy and paste hotel.db
+   - Mac/Linux: cp hotel.db hotel.db.backup
+3. Keep backup in safe location
+
+To restore from backup:
+1. Stop server
+2. Replace hotel.db with backup
+3. Start server again
+
+
+UNINSTALLING
+============
+
+To remove the system:
+
+1. Stop the server (Ctrl+C in terminal)
+2. Close all windows
+3. Delete the hotel-management folder
+4. Delete node_modules if you want (optional)
+
+Node.js installation can remain (you may need it for other projects)
+
+
+GETTING HELP
+============
+
+Read files in order:
+1. QUICK_START.txt - Fast setup
+2. README.txt - Full documentation
+3. API_REFERENCE.txt - API details
+4. DATABASE_STRUCTURE.sql - Database info
+5. configuration.json - Configuration options
+
+These files have all the information you need!
+
+
+FINAL CHECKLIST
+===============
+
+✓ Node.js version 14+ installed
+✓ ZIP file extracted to hotel-management folder
+✓ Terminal open in hotel-management folder
+✓ npm install completed without errors
+✓ npm start running successfully
+✓ http://localhost:5000 opens in browser
+✓ Login page displays
+✓ Login successful with admin@hotel.com / admin123
+✓ Dashboard loads
+✓ Ready to use!
+
+If all checkmarks pass, your system is ready!
+
+
+CONGRATULATIONS!
+================
+
+You have successfully installed and configured the Hotel Management System!
+
+The system is now running and ready to use.
+
+Start exploring, and refer to the documentation if you have any questions.
+
+Enjoy! 🏨

@@ -1,0 +1,174 @@
+HOTEL MANAGEMENT SYSTEM - QUICK START GUIDE
+============================================
+
+WHAT IS THIS?
+A complete hotel management web application with authentication, authorization, 
+database, and professional web interface. Everything you need to manage a hotel.
+
+QUICK SETUP (3 STEPS)
+====================
+
+Step 1: Extract the ZIP file
+    - Extract: hotel-management-system.zip
+    - Go to the folder: cd hotel-management
+
+Step 2: Install (requires Node.js to be installed)
+    - Run: npm install
+    - This downloads all required libraries
+
+Step 3: Start the server
+    - Run: npm start
+    - Open browser: http://localhost:5000
+
+DEFAULT LOGIN CREDENTIALS
+=========================
+
+ADMIN ACCOUNT (Full Access)
+  Email: admin@hotel.com
+  Password: admin123
+
+STAFF ACCOUNT (Manage Bookings)
+  Email: staff@hotel.com
+  Password: staff123
+
+GUEST ACCOUNT (View Own Bookings)
+  Email: guest@hotel.com
+  Password: guest123
+
+WHAT EACH ROLE CAN DO
+=====================
+
+ADMIN:
+  ✓ View dashboard with statistics
+  ✓ Add, edit, delete rooms
+  ✓ Manage all bookings
+  ✓ Create and manage users
+  ✓ View system revenue and stats
+
+STAFF:
+  ✓ View dashboard
+  ✓ Manage rooms
+  ✓ Manage all bookings
+  ✓ Cannot manage users
+
+GUEST:
+  ✓ Search for available rooms
+  ✓ Make bookings
+  ✓ View own bookings
+  ✓ Cannot access admin features
+
+MAIN FEATURES
+=============
+
+1. AUTHENTICATION
+   - Secure login with JWT tokens
+   - Password hashing with bcryptjs
+   - Remember me functionality
+
+2. ROOM MANAGEMENT
+   - Add rooms with type, price, capacity
+   - Track room status (available, occupied, maintenance)
+   - View all rooms with filters
+
+3. BOOKING SYSTEM
+   - Search available rooms by dates
+   - Create reservations automatically
+   - Auto-calculate total price
+   - Track booking status
+   - Add special requests
+
+4. USER MANAGEMENT (Admin)
+   - Create new users
+   - Assign roles (Admin, Staff, Guest)
+   - Reset passwords
+   - Delete users
+   - View statistics
+
+DATABASE TABLES
+===============
+
+1. USERS - User accounts, passwords, roles
+2. ROOMS - Hotel rooms, types, pricing
+3. GUESTS - Guest information
+4. BOOKINGS - Reservations and check-in/out dates
+
+All properly connected with relationships and constraints.
+
+TECHNOLOGY USED
+===============
+
+Frontend:   HTML5, CSS3, JavaScript
+Backend:    Node.js, Express.js
+Database:   SQLite3
+Security:   JWT, bcryptjs
+API:        REST with 30+ endpoints
+
+TROUBLESHOOTING
+===============
+
+PORT ALREADY IN USE:
+  Run: PORT=3000 npm start
+
+DEPENDENCIES ERROR:
+  Run: npm install
+  
+DATABASE ERROR:
+  Run: rm hotel.db
+  Then: npm start
+  (Database will be recreated)
+
+CAN'T LOGIN:
+  - Check email spelling
+  - Try: admin@hotel.com / admin123
+  - Clear browser cookies
+
+FILES IN THE ZIP
+================
+
+server.js              - Main application server
+database.js            - Database setup
+package.json           - List of dependencies
+middleware/auth.js     - Authentication logic
+routes/auth.js         - Login/register API
+routes/rooms.js        - Room management API
+routes/bookings.js     - Booking management API
+routes/users.js        - User management API
+public/index.html      - Web interface
+.env.example           - Configuration template
+
+NEXT STEPS
+==========
+
+1. Extract and setup (follow steps above)
+2. Login as admin@hotel.com / admin123
+3. Explore the features:
+   - Create rooms
+   - Make bookings
+   - Manage users
+4. Read other documentation files:
+   - API_REFERENCE.txt - API endpoints
+   - DATABASE_STRUCTURE.sql - Database info
+   - CONFIGURATION.txt - Setup options
+
+NEED HELP?
+==========
+
+Check these files for more info:
+- QUICK_START.txt (this file)
+- API_REFERENCE.txt - How to use the API
+- DATABASE_STRUCTURE.sql - Database details
+- CONFIGURATION.txt - Configuration options
+- README.txt - Full documentation
+
+READY TO START?
+===============
+
+1. Extract: hotel-management-system.zip
+2. Run: npm install
+3. Run: npm start
+4. Open: http://localhost:5000
+5. Login with credentials above
+
+Questions? Read the other .txt and .sql files in the outputs folder!
+
+Good luck with your hotel management system! 🏨

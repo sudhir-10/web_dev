@@ -1,0 +1,730 @@
+================================================================================
+HOTEL MANAGEMENT SYSTEM - API REFERENCE
+================================================================================
+
+BASE URL: http://localhost:5000/api
+
+AUTHENTICATION:
+For all endpoints except login/register, include this header:
+  Authorization: Bearer <your_jwt_token>
+
+CONTENT TYPE:
+All requests and responses use JSON:
+  Content-Type: application/json
+
+
+================================================================================
+AUTHENTICATION ENDPOINTS
+================================================================================
+
+1. LOGIN
+--------
+Authenticate user and receive JWT token
+
+Endpoint:  POST /auth/login
+Method:    POST
+Auth:      Not required
+
+Request:
+{
+  "email": "admin@hotel.com",
+  "password": "admin123"
+}
+
+Response (Success 200):
+{
+  "success": true,
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "email": "admin@hotel.com",
+    "name": "Administrator",
+    "role": "admin"
+  }
+}
+
+Response (Error 401):
+{
+  "success": false,
+  "message": "Invalid email or password"
+}
+
+
+2. REGISTER
+-----------
+Create new user account
+
+Endpoint:  POST /auth/register
+Method:    POST
+Auth:      Not required
+
+Request:
+{
+  "email": "newuser@example.com",
+  "password": "password123",
+  "name": "John Doe",
+  "role": "guest"
+}
+
+Response (Success 201):
+{
+  "success": true,
+  "message": "User registered successfully",
+  "userId": 5
+}
+
+Response (Error 400):
+{
+  "success": false,
+  "message": "Email already registered"
+}
+
+Validation:
+- Password minimum 6 characters
+- Email must be unique
+- Role must be: admin, staff, or guest
+
+
+3. GET CURRENT USER
+-------------------
+Retrieve authenticated user information
+
+Endpoint:  GET /auth/me
+Method:    GET
+Auth:      Required
+
+Response (Success 200):
+{
+  "success": true,
+  "user": {
+    "id": 1,
+    "email": "admin@hotel.com",
+    "name": "Administrator",
+    "role": "admin"
+  }
+}
+
+
+4. CHANGE PASSWORD
+------------------
+Change password for authenticated user
+
+Endpoint:  POST /auth/change-password
+Method:    POST
+Auth:      Required
+
+Request:
+{
+  "currentPassword": "oldpassword123",
+  "newPassword": "newpassword123"
+}
+
+Response (Success 200):
+{
+  "success": true,
+  "message": "Password changed successfully"
+}
+
+Response (Error 401):
+{
+  "success": false,
+  "message": "Current password is incorrect"
+}
+
+
+================================================================================
+ROOM ENDPOINTS
+================================================================================
+
+1. LIST ALL ROOMS
+-----------------
+Get list of all rooms with optional filters
+
+Endpoint:  GET /rooms
+Method:    GET
+Auth:      Required
+
+Query Parameters (optional):
+  status = available|occupied|maintenance
+  type = single|double|suite
+
+Example: GET /rooms?status=available&type=double
+
+Response (Success 200):
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "room_number": "101",
+      "type": "single",
+      "price_per_night": 80,
+      "capacity": 1,
+      "status": "available",
+      "description": "Single room with city view",
+      "created_at": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "room_number": "102",
+      "type": "double",
+      "price_per_night": 120,
+      "capacity": 2,
+      "status": "available",
+      "description": "Double room with en-suite",
+      "created_at": "2024-01-15T10:30:00.000Z"
+    }
+  ]
+}
+
+
+2. GET SINGLE ROOM
+------------------
+Retrieve details for specific room
+
+Endpoint:  GET /rooms/:id
+Method:    GET
+Auth:      Required
+
+Example:   GET /rooms/1
+
+Response (Success 200):
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "room_number": "101",
+    "type": "single",
+    "price_per_night": 80,
+    "capacity": 1,
+    "status": "available",
+    "description": "Single room with city view",
+    "created_at": "2024-01-15T10:30:00.000Z"
+  }
+}
+
+Response (Error 404):
+{
+  "success": false,
+  "message": "Room not found"
+}
+
+
+3. CREATE ROOM
+--------------
+Create new room (Admin only)
+
+Endpoint:  POST /rooms
+Method:    POST
+Auth:      Required (Admin only)
+
+Request:
+{
+  "room_number": "106",
+  "type": "suite",
+  "price_per_night": 200,
+  "capacity": 4,
+  "description": "Luxury suite with living area"
+}
+
+Response (Success 201):
+{
+  "success": true,
+  "message": "Room created successfully",
+  "roomId": 6
+}
+
+Required Fields:
+- room_number (text, unique)
+- type (single|double|suite)
+- price_per_night (number, positive)
+- capacity (number, positive)
+
+Optional Fields:
+- description (text)
+
+
+4. UPDATE ROOM
+--------------
+Modify room details (Admin only)
+
+Endpoint:  PUT /rooms/:id
+Method:    PUT
+Auth:      Required (Admin only)
+
+Example:   PUT /rooms/1
+
+Request (partial updates supported):
+{
+  "price_per_night": 150,
+  "status": "maintenance",
+  "description": "Updated description"
+}
+
+Response (Success 200):
+{
+  "success": true,
+  "message": "Room updated successfully"
+}
+
+
+5. DELETE ROOM
+--------------
+Delete room (Admin only). Cannot delete if active bookings exist.
+
+Endpoint:  DELETE /rooms/:id
+Method:    DELETE
+Auth:      Required (Admin only)
+
+Example:   DELETE /rooms/1
+
+Response (Success 200):
+{
+  "success": true,
+  "message": "Room deleted successfully"
+}
+
+Response (Error 400):
+{
+  "success": false,
+  "message": "Cannot delete room with active bookings"
+}
+
+
+6. SEARCH AVAILABLE ROOMS
+-------------------------
+Find rooms available for specific dates
+
+Endpoint:  GET /rooms/available/search
+Method:    GET
+Auth:      Required
+
+Query Parameters (required):
+  check_in = YYYY-MM-DD
+  check_out = YYYY-MM-DD
+
+Query Parameters (optional):
+  type = single|double|suite
+
+Example: GET /rooms/available/search?check_in=2024-02-01&check_out=2024-02-05&type=double
+
+Response (Success 200):
+{
+  "success": true,
+  "data": [
+    {
+      "id": 2,
+      "room_number": "102",
+      "type": "double",
+      "price_per_night": 120,
+      "capacity": 2,
+      "status": "available",
+      "description": "Double room with en-suite",
+      "created_at": "2024-01-15T10:30:00.000Z"
+    }
+  ]
+}
+
+
+================================================================================
+BOOKING ENDPOINTS
+================================================================================
+
+1. LIST BOOKINGS
+----------------
+Get bookings (guests see own only, staff/admin see all)
+
+Endpoint:  GET /bookings
+Method:    GET
+Auth:      Required
+
+Query Parameters (optional):
+  status = pending|confirmed|cancelled|completed
+
+Example: GET /bookings?status=confirmed
+
+Response (Success 200):
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "guest_id": 3,
+      "room_id": 1,
+      "check_in": "2024-02-01",
+      "check_out": "2024-02-05",
+      "total_price": 400,
+      "status": "confirmed",
+      "special_requests": "Early check-in if possible",
+      "created_at": "2024-01-20T15:30:00.000Z",
+      "room_number": "101",
+      "type": "single",
+      "name": "John Guest"
+    }
+  ]
+}
+
+
+2. GET SINGLE BOOKING
+---------------------
+Retrieve specific booking (guests can only view their own)
+
+Endpoint:  GET /bookings/:id
+Method:    GET
+Auth:      Required
+
+Example:   GET /bookings/1
+
+Response (Success 200):
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "guest_id": 3,
+    "room_id": 1,
+    "check_in": "2024-02-01",
+    "check_out": "2024-02-05",
+    "total_price": 400,
+    "status": "confirmed",
+    "special_requests": "Early check-in if possible",
+    "created_at": "2024-01-20T15:30:00.000Z",
+    "room_number": "101",
+    "type": "single",
+    "name": "John Guest"
+  }
+}
+
+
+3. CREATE BOOKING
+-----------------
+Create new reservation
+
+Endpoint:  POST /bookings
+Method:    POST
+Auth:      Required
+
+Request:
+{
+  "room_id": 1,
+  "check_in": "2024-02-01",
+  "check_out": "2024-02-05",
+  "special_requests": "Early check-in if possible"
+}
+
+Response (Success 201):
+{
+  "success": true,
+  "message": "Booking created successfully",
+  "bookingId": 5,
+  "totalPrice": 400,
+  "nights": 4
+}
+
+Response (Error 400):
+{
+  "success": false,
+  "message": "Room is not available for the selected dates"
+}
+
+Required Fields:
+- room_id (number)
+- check_in (YYYY-MM-DD)
+- check_out (YYYY-MM-DD)
+
+Optional Fields:
+- special_requests (text)
+
+Validation:
+- check_out must be after check_in
+- Room must be available for dates
+- System auto-calculates total price
+
+
+4. UPDATE BOOKING
+-----------------
+Modify booking details
+
+Endpoint:  PUT /bookings/:id
+Method:    PUT
+Auth:      Required
+
+Example:   PUT /bookings/1
+
+Request (partial updates supported):
+{
+  "check_in": "2024-02-02",
+  "check_out": "2024-02-06",
+  "status": "confirmed",
+  "special_requests": "Late checkout requested"
+}
+
+Response (Success 200):
+{
+  "success": true,
+  "message": "Booking updated successfully",
+  "totalPrice": 480
+}
+
+
+5. CANCEL BOOKING
+-----------------
+Cancel a booking (changes status to cancelled)
+
+Endpoint:  DELETE /bookings/:id
+Method:    DELETE
+Auth:      Required
+
+Example:   DELETE /bookings/1
+
+Response (Success 200):
+{
+  "success": true,
+  "message": "Booking cancelled successfully"
+}
+
+
+================================================================================
+USER ENDPOINTS (ADMIN ONLY)
+================================================================================
+
+1. LIST ALL USERS
+-----------------
+Get list of all users
+
+Endpoint:  GET /users
+Method:    GET
+Auth:      Required (Admin only)
+
+Response (Success 200):
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "email": "admin@hotel.com",
+      "name": "Administrator",
+      "role": "admin",
+      "created_at": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "email": "guest@hotel.com",
+      "name": "John Guest",
+      "role": "guest",
+      "created_at": "2024-01-15T10:30:00.000Z"
+    }
+  ]
+}
+
+
+2. GET SINGLE USER
+------------------
+Retrieve specific user details
+
+Endpoint:  GET /users/:id
+Method:    GET
+Auth:      Required (Admin only)
+
+Example:   GET /users/3
+
+Response (Success 200):
+{
+  "success": true,
+  "data": {
+    "id": 3,
+    "email": "guest@hotel.com",
+    "name": "John Guest",
+    "role": "guest",
+    "created_at": "2024-01-15T10:30:00.000Z"
+  }
+}
+
+
+3. UPDATE USER
+--------------
+Modify user details (Admin only)
+
+Endpoint:  PUT /users/:id
+Method:    PUT
+Auth:      Required (Admin only)
+
+Example:   PUT /users/3
+
+Request (partial updates supported):
+{
+  "name": "Jane Guest",
+  "email": "jane@hotel.com",
+  "role": "staff"
+}
+
+Response (Success 200):
+{
+  "success": true,
+  "message": "User updated successfully"
+}
+
+
+4. RESET PASSWORD
+-----------------
+Change user password (Admin only)
+
+Endpoint:  POST /users/:id/reset-password
+Method:    POST
+Auth:      Required (Admin only)
+
+Example:   POST /users/3/reset-password
+
+Request:
+{
+  "newPassword": "newpassword123"
+}
+
+Response (Success 200):
+{
+  "success": true,
+  "message": "Password reset successfully"
+}
+
+Validation:
+- Password minimum 6 characters
+
+
+5. DELETE USER
+--------------
+Remove user from system (Admin only)
+
+Endpoint:  DELETE /users/:id
+Method:    DELETE
+Auth:      Required (Admin only)
+
+Example:   DELETE /users/3
+
+Response (Success 200):
+{
+  "success": true,
+  "message": "User deleted successfully"
+}
+
+Response (Error 400):
+{
+  "success": false,
+  "message": "Cannot delete your own account"
+}
+
+
+6. GET STATISTICS
+-----------------
+Retrieve system overview statistics (Admin only)
+
+Endpoint:  GET /users/stats/overview
+Method:    GET
+Auth:      Required (Admin only)
+
+Response (Success 200):
+{
+  "success": true,
+  "data": {
+    "totalUsers": 5,
+    "totalRooms": 10,
+    "totalBookings": 25,
+    "confirmedBookings": 18,
+    "totalRevenue": 5600.50
+  }
+}
+
+
+================================================================================
+HTTP STATUS CODES
+================================================================================
+
+200 OK - Request successful
+201 Created - Resource created successfully
+400 Bad Request - Invalid request data or validation failed
+401 Unauthorized - Authentication required or invalid token
+403 Forbidden - Insufficient permissions for requested action
+404 Not Found - Resource does not exist
+500 Internal Server Error - Server error occurred
+
+
+================================================================================
+ERROR RESPONSE FORMAT
+================================================================================
+
+All error responses follow this format:
+
+{
+  "success": false,
+  "message": "Detailed error message"
+}
+
+Common Error Messages:
+- "No token provided"
+- "Invalid or expired token"
+- "Authentication required"
+- "Insufficient permissions"
+- "Email already registered"
+- "Invalid email or password"
+- "Room is not available for the selected dates"
+- "Room not found"
+- "User not found"
+- "Booking not found"
+
+
+================================================================================
+CURL EXAMPLES
+================================================================================
+
+Login:
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@hotel.com","password":"admin123"}'
+
+Get Rooms (replace TOKEN with actual token):
+curl -X GET http://localhost:5000/api/rooms \
+  -H "Authorization: Bearer TOKEN"
+
+Create Booking:
+curl -X POST http://localhost:5000/api/bookings \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "room_id": 1,
+    "check_in": "2024-02-01",
+    "check_out": "2024-02-05"
+  }'
+
+Get Available Rooms:
+curl -X GET "http://localhost:5000/api/rooms/available/search?check_in=2024-02-01&check_out=2024-02-05" \
+  -H "Authorization: Bearer TOKEN"
+
+
+================================================================================
+RATE LIMITING
+================================================================================
+
+Currently no rate limiting is implemented.
+For production, consider:
+- Limit requests per IP
+- Limit requests per user
+- Implement timeout handling
+- Set up API throttling
+
+
+================================================================================
+NOTES
+================================================================================
+
+1. All timestamps are in ISO 8601 format (YYYY-MM-DDTHH:MM:SS.SSSZ)
+2. All prices are in USD and use DECIMAL format
+3. Dates use YYYY-MM-DD format
+4. JWT tokens expire after 24 hours
+5. Guest profiles are auto-created when guest makes first booking
+6. Room availability considers all pending and confirmed bookings
+7. Bookings with overlapping dates on same room are prevented
+8. Cascade delete is enabled (deleting user deletes all related data)
+
+
+================================================================================
+END OF API REFERENCE
+================================================================================

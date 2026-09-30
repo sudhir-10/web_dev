@@ -1,0 +1,291 @@
+{
+  "name": "Hotel Management System",
+  "version": "1.0.0",
+  "description": "Complete hotel management web application with authentication and database",
+  
+  "server": {
+    "port": 5000,
+    "host": "localhost",
+    "environment": "development",
+    "description": "Change port to 3000 if 5000 is already in use"
+  },
+
+  "database": {
+    "type": "sqlite3",
+    "path": "./hotel.db",
+    "autoCreate": true,
+    "description": "SQLite for development. Use PostgreSQL for production."
+  },
+
+  "authentication": {
+    "jwt": {
+      "secret": "hotel-management-secret-key-2024",
+      "expiresIn": "24h",
+      "algorithm": "HS256",
+      "description": "Change JWT_SECRET for production to a random string"
+    },
+    "password": {
+      "algorithm": "bcryptjs",
+      "saltRounds": 10,
+      "minLength": 6,
+      "description": "Passwords are hashed with bcryptjs"
+    }
+  },
+
+  "security": {
+    "cors": {
+      "enabled": true,
+      "allowedOrigins": "*",
+      "description": "Restrict origins for production"
+    },
+    "https": {
+      "enabled": false,
+      "certificate": null,
+      "description": "Enable HTTPS for production"
+    },
+    "rateLimiting": {
+      "enabled": false,
+      "description": "Consider enabling for production"
+    }
+  },
+
+  "roles": {
+    "admin": {
+      "description": "Full system access",
+      "permissions": [
+        "manage_rooms",
+        "manage_bookings",
+        "manage_users",
+        "view_statistics",
+        "view_dashboard"
+      ]
+    },
+    "staff": {
+      "description": "Limited access - no user management",
+      "permissions": [
+        "manage_rooms",
+        "manage_bookings",
+        "view_dashboard"
+      ]
+    },
+    "guest": {
+      "description": "View-only access to own bookings",
+      "permissions": [
+        "search_rooms",
+        "create_booking",
+        "view_own_bookings"
+      ]
+    }
+  },
+
+  "defaultUsers": [
+    {
+      "email": "admin@hotel.com",
+      "password": "admin123",
+      "name": "Administrator",
+      "role": "admin",
+      "description": "Full system access"
+    },
+    {
+      "email": "staff@hotel.com",
+      "password": "staff123",
+      "name": "Staff Member",
+      "role": "staff",
+      "description": "Can manage bookings and rooms"
+    },
+    {
+      "email": "guest@hotel.com",
+      "password": "guest123",
+      "name": "John Guest",
+      "role": "guest",
+      "description": "Can search rooms and make bookings"
+    }
+  ],
+
+  "defaultRooms": [
+    {
+      "room_number": "101",
+      "type": "single",
+      "price_per_night": 80,
+      "capacity": 1,
+      "status": "available",
+      "description": "Single room with city view"
+    },
+    {
+      "room_number": "102",
+      "type": "double",
+      "price_per_night": 120,
+      "capacity": 2,
+      "status": "available",
+      "description": "Double room with en-suite bathroom"
+    },
+    {
+      "room_number": "103",
+      "type": "suite",
+      "price_per_night": 200,
+      "capacity": 4,
+      "status": "available",
+      "description": "Luxury suite with living area"
+    },
+    {
+      "room_number": "104",
+      "type": "double",
+      "price_per_night": 120,
+      "capacity": 2,
+      "status": "occupied",
+      "description": "Double room on 1st floor"
+    },
+    {
+      "room_number": "105",
+      "type": "single",
+      "price_per_night": 80,
+      "capacity": 1,
+      "status": "available",
+      "description": "Single room with garden view"
+    }
+  ],
+
+  "roomTypes": {
+    "single": {
+      "description": "Single bed room",
+      "bedCount": 1,
+      "maxGuests": 1
+    },
+    "double": {
+      "description": "Double bed room",
+      "bedCount": 1,
+      "maxGuests": 2
+    },
+    "suite": {
+      "description": "Suite with living area",
+      "bedCount": 2,
+      "maxGuests": 4
+    }
+  },
+
+  "roomStatus": {
+    "available": "Ready for booking",
+    "occupied": "Currently booked",
+    "maintenance": "Under maintenance"
+  },
+
+  "bookingStatus": {
+    "pending": "Awaiting confirmation",
+    "confirmed": "Confirmed reservation",
+    "cancelled": "Cancelled booking",
+    "completed": "Stay completed"
+  },
+
+  "api": {
+    "baseUrl": "http://localhost:5000/api",
+    "version": "v1",
+    "endpoints": {
+      "authentication": [
+        "POST /auth/register",
+        "POST /auth/login",
+        "GET /auth/me",
+        "POST /auth/change-password"
+      ],
+      "rooms": [
+        "GET /rooms",
+        "GET /rooms/:id",
+        "POST /rooms",
+        "PUT /rooms/:id",
+        "DELETE /rooms/:id",
+        "GET /rooms/available/search"
+      ],
+      "bookings": [
+        "GET /bookings",
+        "GET /bookings/:id",
+        "POST /bookings",
+        "PUT /bookings/:id",
+        "DELETE /bookings/:id"
+      ],
+      "users": [
+        "GET /users",
+        "GET /users/:id",
+        "PUT /users/:id",
+        "POST /users/:id/reset-password",
+        "DELETE /users/:id",
+        "GET /users/stats/overview"
+      ]
+    }
+  },
+
+  "frontendConfig": {
+    "baseUrl": "http://localhost:5000",
+    "apiUrl": "http://localhost:5000/api",
+    "tokenStorageKey": "token",
+    "tokenHeaderName": "Authorization",
+    "theme": {
+      "primary": "#1a365d",
+      "secondary": "#2d5a8c",
+      "accent": "#f59e0b"
+    }
+  },
+
+  "production": {
+    "port": 5000,
+    "environment": "production",
+    "database": "PostgreSQL",
+    "https": true,
+    "rateLimiting": true,
+    "logging": "Advanced",
+    "monitoring": "Enabled",
+    "backups": "Daily",
+    "description": "Configuration recommendations for production deployment"
+  },
+
+  "environmentVariables": {
+    "PORT": {
+      "default": 5000,
+      "description": "Server port number"
+    },
+    "JWT_SECRET": {
+      "default": "hotel-management-secret-key-2024",
+      "description": "Secret key for JWT tokens (change for production)"
+    },
+    "NODE_ENV": {
+      "default": "development",
+      "description": "Environment: development or production"
+    },
+    "DB_PATH": {
+      "default": "./hotel.db",
+      "description": "Database file path (SQLite)"
+    }
+  },
+
+  "features": {
+    "authentication": true,
+    "authorization": true,
+    "roomManagement": true,
+    "bookingSystem": true,
+    "userManagement": true,
+    "dashboard": true,
+    "responsiveUI": true,
+    "restAPI": true
+  },
+
+  "technicalStack": {
+    "frontend": {
+      "html": "5",
+      "css": "3",
+      "javascript": "ES6"
+    },
+    "backend": {
+      "runtime": "Node.js",
+      "framework": "Express.js",
+      "database": "SQLite3",
+      "authentication": "JWT",
+      "passwordHashing": "bcryptjs"
+    },
+    "libraries": {
+      "express": "^4.18.2",
+      "sqlite3": "^5.1.6",
+      "bcryptjs": "^2.4.3",
+      "jsonwebtoken": "^9.0.0",
+      "cors": "^2.8.5",
+      "dotenv": "^16.0.3"
+    }
+  }
+}

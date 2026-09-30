@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel Management System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1a365d;
+      --secondary: #2d5a8c;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --gray-light: #f9fafb;
+      --gray-dark: #6b7280;
+      --border: #e5e7eb;
+      --text: #1f2937;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    }
+
+    body {
+      background: var(--gray-light);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--primary);
+      color: white;
+      padding: 2rem 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+
+    .logo {
+      padding: 0 1.5rem 2rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+    }
+
+    .nav-item {
+      border-left: 4px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .nav-item a {
+      display: block;
+      padding: 1rem 1.5rem;
+      color: white;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+
+    .nav-item a:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-item.active {
+      border-left-color: var(--accent);
+    }
+
+    .nav-item.active a {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-section {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-section-title {
+      padding: 0.5rem 1.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 0.05em;
+    }
+
+    .user-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .user-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .user-role {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-transform: capitalize;
+      margin-bottom: 1rem;
+    }
+
+    .logout-btn {
+      width: 100%;
+      padding: 0.5rem;
+      background: var(--danger);
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: #dc2626;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-title {
+      font-size: 1.875rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(45, 90, 140, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--gray-light);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    /* Cards */
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    /* Tables */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background: var(--gray-light);
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:hover {
+      background: var(--gray-light);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .badge-success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge-info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 1rem;
+      border-radius: 0.375rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .alert-success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #6ee7b7;
+    }
+
+    .alert-danger {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+
+    .alert-info {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #93c5fd;
+    }
+
+    .alert-close {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray-dark);
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Login Page */
+    .login-container {
+      display: flex;
+      height: 100vh;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    }
+
+    .login-form {
+      width: 100%;
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 3rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-title {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .login-subtitle {
+      text-align: center;
+      color: var(--gray-dark);
+      margin-bottom: 2rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-row.full {
+      grid-template-columns: 1fr;
+    }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: var(--secondary);
+      margin: 1rem 0;
+    }
+
+    .stat-label {
+      color: var(--gray-dark);
+      font-size: 0.95rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        padding: 1rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: auto;
+      }
+
+      .sidebar-nav {
+        display: none;
+      }
+
+      .user-info {
+        position: static;
+        border: none;
+        background: none;
+        padding: 0;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: 0.75rem;
+      }
+    }
+
+    /* Visibility */
+    .hidden {
+      display: none !important;
+    }
+
+    .show-admin {
+      display: none;
+    }
+
+    .show-admin.visible {
+      display: block;
+    }
+
+    .show-staff {
+      display: none;
+    }
+
+    .show-staff.visible {
+      display: block;
+    }
+
+    .show-guest {
+      display: none;
+    }
+
+    .show-guest.visible {
+      display: block;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      border: 3px solid var(--gray-light);
+      border-top: 3px solid var(--secondary);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Page -->
+  <div id="loginPage" class="container" style="display: none;">
+    <div class="login-form">
+      <h1 class="login-title">🏨 HotelHub</h1>
+      <p class="login-subtitle">Hotel Management System</p>
+      
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="admin@hotel.com" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••" required>
+        </div>
+        <div id="loginError" class="alert alert-danger hidden" style="margin-bottom: 1.5rem;">
+          <span id="loginErrorMsg"></span>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">Sign In</button>
+      </form>
+
+      <div style="background: var(--gray-light); padding: 1.5rem; border-radius: 0.375rem; margin-top: 1.5rem;">
+        <p style="font-weight: 600; margin-bottom: 1rem;">Demo Credentials:</p>
+        <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Admin:</strong> admin@hotel.com / admin123</p>
+        <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Staff:</strong> staff@hotel.com / staff123</p>
+        <p style="font-size: 0.9rem;"><strong>Guest:</strong> guest@hotel.com / guest123</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="container" style="display: none;">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">🏨 HotelHub</div>
+      
+      <ul class="sidebar-nav">
+        <li class="nav-item active" onclick="showPage('dashboard', this)">
+          <a href="#">Dashboard</a>
+        </li>
+        
+        <li class="nav-section show-admin visible nav-item" onclick="showPage('rooms', this)">
+          <a href="#">Rooms</a>
+        </li>
+        
+        <li class="nav-item show-admin show-staff visible" onclick="showPage('bookings', this)">
+          <a href="#">Bookings</a>
+        </li>
+
+        <li class="nav-item show-guest visible" onclick="showPage('my-bookings', this)">
+          <a href="#">My Bookings</a>
+        </li>
+
+        <li class="nav-item show-guest visible" onclick="showPage('search-rooms', this)">
+          <a href="#">Search Rooms</a>
+        </li>
+
+        <li class="nav-section show-admin visible">
+          <div class="nav-section-title">Administration</div>
+        </li>
+
+        <li class="nav-item show-admin visible" onclick="showPage('users', this)">
+          <a href="#">Users</a>
+        </li>
+      </ul>
+
+      <div class="user-info">
+        <div class="user-name" id="userName">User</div>
+        <div class="user-role" id="userRole">guest</div>
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <header class="header">
+        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+      </header>
+
+      <div class="content">
+        <!-- Dashboard Page -->
+        <div id="dashboardPage" class="page">
+          <div class="grid grid-2">
+            <div class="stat-card show-admin visible">
+              <div class="stat-label">Total Users</div>
+              <div class="stat-value" id="totalUsers">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Rooms</div>
+              <div class="stat-value" id="totalRooms">0</div>
+            </div>
+            <div class="stat-card show-admin show-staff visible">
+              <div class="stat-label">Total Bookings</div>
+              <div class="stat-value" id="totalBookings">0</div>
+            </div>
+            <div class="stat-card show-admin show-staff visible">
+              <div class="stat-label">Confirmed Bookings</div>
+              <div class="stat-value" id="confirmedBookings">0</div>
+            </div>
+            <div class="stat-card show-admin visible">
+              <div class="stat-label">Total Revenue</div>
+              <div class="stat-value" id="totalRevenue">$0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rooms Page -->
+        <div id="roomsPage" class="page hidden show-admin visible">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Room Management</h2>
+              <button class="btn btn-primary" onclick="openRoomModal()">Add Room</button>
+            </div>
+            <div class="table-responsive">
+              <table id="roomsTable">
+                <thead>
+                  <tr>
+                    <th>Room #</th>
+                    <th>Type</th>
+                    <th>Capacity</th>
+                    <th>Price/Night</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bookings Page -->
+        <div id="bookingsPage" class="page hidden show-admin show-staff visible">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Bookings</h2>
+              <button class="btn btn-primary" onclick="openBookingModal()">New Booking</button>
+            </div>
+            <div class="table-responsive">
+              <table id="bookingsTable">
+                <thead>
+                  <tr>
+                    <th>Guest</th>
+                    <th>Room</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Bookings Page (Guest) -->
+        <div id="myBookingsPage" class="page hidden show-guest visible">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">My Bookings</h2>
+              <button class="btn btn-primary" onclick="showPage('search-rooms')">Book a Room</button>
+            </div>
+            <div class="table-responsive">
+              <table id="myBookingsTable">
+                <thead>
+                  <tr>
+                    <th>Room</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Rooms Page (Guest) -->
+        <div id="searchRoomsPage" class="page hidden show-guest visible">
+          <div class="card">
+            <h2 class="card-title">Find Available Rooms</h2>
+            <form onsubmit="searchRooms(event)" style="margin-top: 1.5rem;">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="searchCheckIn">Check-in Date</label>
+                  <input type="date" id="searchCheckIn" required>
+                </div>
+                <div class="form-group">
+                  <label for="searchCheckOut">Check-out Date</label>
+                  <input type="date" id="searchCheckOut" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="searchType">Room Type</label>
+                <select id="searchType">
+                  <option value="">Any Type</option>
+                  <option value="single">Single</option>
+                  <option value="double">Double</option>
+                  <option value="suite">Suite</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Search Rooms</button>
+            </form>
+
+            <div id="searchResults" style="margin-top: 2rem;"></div>
+          </div>
+        </div>
+
+        <!-- Users Page -->
+        <div id="usersPage" class="page hidden show-admin visible">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">User Management</h2>
+              <button class="btn btn-primary" onclick="openUserModal()">Add User</button>
+            </div>
+            <div class="table-responsive">
+              <table id="usersTable">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="roomModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Add Room</h2>
+        <button class="modal-close" onclick="closeModal('roomModal')">&times;</button>
+      </div>
+      <form id="roomForm" onsubmit="saveRoom(event)">
+        <div class="form-group">
+          <label for="roomNumber">Room Number</label>
+          <input type="text" id="roomNumber" name="room_number" placeholder="101" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="roomType">Type</label>
+            <select id="roomType" name="type" required>
+              <option value="">Select Type</option>
+              <option value="single">Single</option>
+              <option value="double">Double</option>
+              <option value="suite">Suite</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="roomCapacity">Capacity</label>
+            <input type="number" id="roomCapacity" name="capacity" min="1" placeholder="2" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="roomPrice">Price per Night ($)</label>
+            <input type="number" id="roomPrice" name="price_per_night" min="0" step="0.01" placeholder="100" required>
+          </div>
+          <div class="form-group">
+            <label for="roomStatus">Status</label>
+            <select id="roomStatus" name="status">
+              <option value="available">Available</option>
+              <option value="occupied">Occupied</option>
+              <option value="maintenance">Maintenance</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="roomDescription">Description</label>
+          <textarea id="roomDescription" name="description" placeholder="Room details..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('roomModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Room</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="bookingModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">New Booking</h2>
+        <button class="modal-close" onclick="closeModal('bookingModal')">&times;</button>
+      </div>
+      <form id="bookingForm" onsubmit="saveBooking(event)">
+        <div class="form-group">
+          <label for="bookingRoom">Room</label>
+          <select id="bookingRoom" name="room_id" required></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bookingCheckIn">Check-in</label>
+            <input type="date" id="bookingCheckIn" name="check_in" required>
+          </div>
+          <div class="form-group">
+            <label for="bookingCheckOut">Check-out</label>
+            <input type="date" id="bookingCheckOut" name="check_out" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="bookingRequests">Special Requests</label>
+          <textarea id="bookingRequests" name="special_requests" placeholder="Any special requirements..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('bookingModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Booking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Add User</h2>
+        <button class="modal-close" onclick="closeModal('userModal')">&times;</button>
+      </div>
+      <form id="userForm" onsubmit="saveUser(event)">
+        <div class="form-group">
+          <label for="userName">Name</label>
+          <input type="text" id="userName" name="name" placeholder="John Doe" required>
+        </div>
+        <div class="form-group">
+          <label for="userEmail">Email</label>
+          <input type="email" id="userEmail" name="email" placeholder="john@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="userPassword">Password</label>
+          <input type="password" id="userPassword" name="password" placeholder="••••••" required>
+        </div>
+        <div class="form-group">
+          <label for="userRole">Role</label>
+          <select id="userRole" name="role" required>
+            <option value="">Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="staff">Staff</option>
+            <option value="guest">Guest</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('userModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let currentUser = null;
+    let currentEditId = null;
+    let token = localStorage.getItem('token');
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      if (token) {
+        loadCurrentUser();
+      } else {
+        showLoginPage();
+      }
+
+      // Set minimum date for date inputs to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('searchCheckIn').min = today;
+      document.getElementById('bookingCheckIn').min = today;
+    });
+
+    // Authentication Functions
+    function showLoginPage() {
+      document.getElementById('loginPage').style.display = 'flex';
+      document.getElementById('dashboard').style.display = 'none';
+    }
+
+    function showDashboard() {
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'flex';
+      loadDashboardStats();
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+          showLoginError(data.message);
+          return;
+        }
+
+        token = data.token;
+        localStorage.setItem('token', token);
+        currentUser = data.user;
+
+        updateUIForRole();
+        showDashboard();
+        loadCurrentUser();
+      } catch (error) {
+        showLoginError('Connection error. Please try again.');
+      }
+    }
+
+    function showLoginError(message) {
+      const errorDiv = document.getElementById('loginError');
+      document.getElementById('loginErrorMsg').textContent = message;
+      errorDiv.classList.remove('hidden');
+    }
+
+    async function loadCurrentUser() {
+      try {
+        const response = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          currentUser = data.user;
+          document.getElementById('userName').textContent = currentUser.name;
+          document.getElementById('userRole').textContent = currentUser.role;
+          updateUIForRole();
+          showDashboard();
+        }
+      } catch (error) {
+        console.error('Error loading user:', error);
+      }
+    }
+
+    function updateUIForRole() {
+      const role = currentUser?.role || 'guest';
+      
+      document.querySelectorAll('[class*="show-"]').forEach(el => {
+        el.classList.remove('visible');
+        if (el.classList.contains(`show-${role}`)) {
+          el.classList.add('visible');
+        }
+      });
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('token');
+      token = null;
+      currentUser = null;
+      document.getElementById('email').value = '';
+      document.getElementById('password').value = '';
+      showLoginPage();
+    }
+
+    // Page Navigation
+    function showPage(pageName, element) {
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.add('hidden');
+      });
+
+      // Update sidebar
+      document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      // Show selected page
+      const pageMap = {
+        'dashboard': { page: 'dashboardPage', title: 'Dashboard', load: loadDashboardStats },
+        'rooms': { page: 'roomsPage', title: 'Room Management', load: loadRooms },
+        'bookings': { page: 'bookingsPage', title: 'Bookings', load: loadBookings },
+        'my-bookings': { page: 'myBookingsPage', title: 'My Bookings', load: loadMyBookings },
+        'search-rooms': { page: 'searchRoomsPage', title: 'Find Available Rooms', load: null },
+        'users': { page: 'usersPage', title: 'User Management', load: loadUsers }
+      };
+
+      const config = pageMap[pageName];
+      if (config) {
+        document.getElementById(config.page).classList.remove('hidden');
+        document.getElementById('pageTitle').textContent = config.title;
+        if (element) element.classList.add('active');
+        if (config.load) config.load();
+      }
+    }
+
+    // Dashboard
+    async function loadDashboardStats() {
+      try {
+        const response = await fetch('/api/users/stats/overview', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            document.getElementById('totalUsers').textContent = data.data.totalUsers;
+            document.getElementById('totalRooms').textContent = data.data.totalRooms;
+            document.getElementById('totalBookings').textContent = data.data.totalBookings;
+            document.getElementById('confirmedBookings').textContent = data.data.confirmedBookings;
+            document.getElementById('totalRevenue').textContent = '$' + data.data.totalRevenue.toFixed(2);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
+    }
+
+    // Rooms Management
+    async function loadRooms() {
+      try {
+        const response = await fetch('/api/rooms', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+        const tbody = document.querySelector('#roomsTable tbody');
+        tbody.innerHTML = '';
+
+        if (data.success) {
+          data.data.forEach(room => {
+            const statusBadge = {
+              'available': 'badge-success',
+              'occupied': 'badge-warning',
+              'maintenance': 'badge-danger'
+            }[room.status];
+
+            tbody.innerHTML += `
+              <tr>
+                <td>${room.room_number}</td>
+                <td>${room.type}</td>
+                <td>${room.capacity}</td>
+                <td>$${room.price_per_night}</td>
+                <td><span class="badge ${statusBadge}">${room.status}</span></td>
+                <td>
+                  <button class="btn btn-secondary btn-small" onclick="editRoom(${room.id})">Edit</button>
+                  <button class="btn btn-danger btn-small" onclick="deleteRoom(${room.id})">Delete</button>
+                </td>
+              </tr>
+            `;
+          });
+        }
+      } catch (error) {
+        console.error('Error loading rooms:', error);
+      }
+    }
+
+    async function saveRoom(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const body = Object.fromEntries(formData);
+
+      try {
+        const method = currentEditId ? 'PUT' : 'POST';
+        const url = currentEditId ? `/api/rooms/${currentEditId}` : '/api/rooms';
+
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          closeModal('roomModal');
+          currentEditId = null;
+          e.target.reset();
+          loadRooms();
+        }
+      } catch (error) {
+        console.error('Error saving room:', error);
+      }
+    }
+
+    function openRoomModal() {
+      currentEditId = null;
+      document.getElementById('roomForm').reset();
+      document.querySelector('#roomModal .modal-title').textContent = 'Add Room';
+      openModal('roomModal');
+    }
+
+    function editRoom(id) {
+      currentEditId = id;
+      // Load room data and populate form
+      openModal('roomModal');
+      document.querySelector('#roomModal .modal-title').textContent = 'Edit Room';
+    }
+
+    async function deleteRoom(id) {
+      if (!confirm('Delete this room?')) return;
+
+      try {
+        const response = await fetch(`/api/rooms/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          loadRooms();
+        }
+      } catch (error) {
+        console.error('Error deleting room:', error);
+      }
+    }
+
+    // Bookings Management
+    async function loadBookings() {
+      try {
+        const response = await fetch('/api/bookings', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+        const tbody = document.querySelector('#bookingsTable tbody');
+        tbody.innerHTML = '';
+
+        if (data.success) {
+          data.data.forEach(booking => {
+            const statusBadge = {
+              'pending': 'badge-warning',
+              'confirmed': 'badge-success',
+              'cancelled': 'badge-danger',
+              'completed': 'badge-info'
+            }[booking.status];
+
+            tbody.innerHTML += `
+              <tr>
+                <td>${booking.name}</td>
+                <td>${booking.room_number} (${booking.type})</td>
+                <td>${booking.check_in}</td>
+                <td>${booking.check_out}</td>
+                <td>$${booking.total_price}</td>
+                <td><span class="badge ${statusBadge}">${booking.status}</span></td>
+                <td>
+                  <button class="btn btn-secondary btn-small" onclick="editBooking(${booking.id})">Edit</button>
+                  <button class="btn btn-danger btn-small" onclick="deleteBooking(${booking.id})">Cancel</button>
+                </td>
+              </tr>
+            `;
+          });
+        }
+      } catch (error) {
+        console.error('Error loading bookings:', error);
+      }
+    }
+
+    async function loadMyBookings() {
+      try {
+        const response = await fetch('/api/bookings', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+        const tbody = document.querySelector('#myBookingsTable tbody');
+        tbody.innerHTML = '';
+
+        if (data.success) {
+          data.data.forEach(booking => {
+            const statusBadge = {
+              'pending': 'badge-warning',
+              'confirmed': 'badge-success',
+              'cancelled': 'badge-danger',
+              'completed': 'badge-info'
+            }[booking.status];
+
+            tbody.innerHTML += `
+              <tr>
+                <td>${booking.room_number} (${booking.type})</td>
+                <td>${booking.check_in}</td>
+                <td>${booking.check_out}</td>
+                <td>$${booking.total_price}</td>
+                <td><span class="badge ${statusBadge}">${booking.status}</span></td>
+                <td>
+                  ${booking.status === 'pending' || booking.status === 'confirmed' ? 
+                    `<button class="btn btn-danger btn-small" onclick="deleteBooking(${booking.id})">Cancel</button>` : 
+                    '-'}
+                </td>
+              </tr>
+            `;
+          });
+        }
+      } catch (error) {
+        console.error('Error loading bookings:', error);
+      }
+    }
+
+    async function saveBooking(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const body = Object.fromEntries(formData);
+
+      try {
+        const method = currentEditId ? 'PUT' : 'POST';
+        const url = currentEditId ? `/api/bookings/${currentEditId}` : '/api/bookings';
+
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          closeModal('bookingModal');
+          currentEditId = null;
+          e.target.reset();
+          loadBookings();
+        }
+      } catch (error) {
+        console.error('Error saving booking:', error);
+      }
+    }
+
+    function openBookingModal() {
+      currentEditId = null;
+      loadRoomSelect();
+      document.getElementById('bookingForm').reset();
+      openModal('bookingModal');
+    }
+
+    async function loadRoomSelect() {
+      try {
+        const response = await fetch('/api/rooms', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+        const select = document.getElementById('bookingRoom');
+        select.innerHTML = '<option value="">Select Room</option>';
+
+        if (data.success) {
+          data.data.forEach(room => {
+            select.innerHTML += `<option value="${room.id}">${room.room_number} - ${room.type} ($${room.price_per_night})</option>`;
+          });
+        }
+      } catch (error) {
+        console.error('Error loading rooms:', error);
+      }
+    }
+
+    function editBooking(id) {
+      currentEditId = id;
+      openModal('bookingModal');
+      document.querySelector('#bookingModal .modal-title').textContent = 'Edit Booking';
+    }
+
+    async function deleteBooking(id) {
+      if (!confirm('Cancel this booking?')) return;
+
+      try {
+        const response = await fetch(`/api/bookings/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          loadMyBookings();
+          loadBookings();
+        }
+      } catch (error) {
+        console.error('Error cancelling booking:', error);
+      }
+    }
+
+    // Room Search (Guest)
+    async function searchRooms(e) {
+      e.preventDefault();
+      const checkIn = document.getElementById('searchCheckIn').value;
+      const checkOut = document.getElementById('searchCheckOut').value;
+      const type = document.getElementById('searchType').value;
+
+      try {
+        let url = `/api/rooms/available/search?check_in=${checkIn}&check_out=${checkOut}`;
+        if (type) url += `&type=${type}`;
+
+        const response = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+        const resultsDiv = document.getElementById('searchResults');
+        resultsDiv.innerHTML = '';
+
+        if (data.success && data.data.length > 0) {
+          resultsDiv.innerHTML = '<h3 style="margin-bottom: 1.5rem;">Available Rooms</h3>';
+          const grid = document.createElement('div');
+          grid.className = 'grid';
+
+          data.data.forEach(room => {
+            const checkInDate = new Date(checkIn);
+            const checkOutDate = new Date(checkOut);
+            const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+            const total = nights * room.price_per_night;
+
+            grid.innerHTML += `
+              <div style="background: white; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem;">Room ${room.room_number}</h4>
+                <p style="color: var(--gray-dark); margin-bottom: 1rem;">
+                  ${room.type.charAt(0).toUpperCase() + room.type.slice(1)} • Capacity: ${room.capacity}
+                </p>
+                <p style="margin-bottom: 0.5rem;"><strong>$${room.price_per_night}</strong> per night</p>
+                <p style="color: var(--gray-dark); font-size: 0.9rem; margin-bottom: 1rem;">Total for ${nights} nights: <strong>$${total}</strong></p>
+                <p style="color: var(--gray-dark); font-size: 0.9rem; margin-bottom: 1.5rem;">${room.description || 'No description'}</p>
+                <button class="btn btn-primary" onclick="bookRoom(${room.id}, '${checkIn}', '${checkOut}')">Book Room</button>
+              </div>
+            `;
+          });
+
+          resultsDiv.appendChild(grid);
+        } else {
+          resultsDiv.innerHTML = '<p style="color: var(--gray-dark);">No available rooms for the selected dates and criteria.</p>';
+        }
+      } catch (error) {
+        console.error('Error searching rooms:', error);
+      }
+    }
+
+    async function bookRoom(roomId, checkIn, checkOut) {
+      try {
+        const response = await fetch('/api/bookings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            room_id: roomId,
+            check_in: checkIn,
+            check_out: checkOut
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          alert('Booking created successfully!');
+          showPage('my-bookings');
+          loadMyBookings();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Error booking room:', error);
+      }
+    }
+
+    // Users Management
+    async function loadUsers() {
+      try {
+        const response = await fetch('/api/users', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+        const tbody = document.querySelector('#usersTable tbody');
+        tbody.innerHTML = '';
+
+        if (data.success) {
+          data.data.forEach(user => {
+            const date = new Date(user.created_at).toLocaleDateString();
+            tbody.innerHTML += `
+              <tr>
+                <td>${user.name}</td>
+                <td>${user.email}</td>
+                <td><span class="badge badge-info">${user.role}</span></td>
+                <td>${date}</td>
+                <td>
+                  <button class="btn btn-secondary btn-small" onclick="editUser(${user.id})">Edit</button>
+                  <button class="btn btn-danger btn-small" onclick="deleteUser(${user.id})">Delete</button>
+                </td>
+              </tr>
+            `;
+          });
+        }
+      } catch (error) {
+        console.error('Error loading users:', error);
+      }
+    }
+
+    async function saveUser(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const body = Object.fromEntries(formData);
+
+      try {
+        const method = currentEditId ? 'PUT' : 'POST';
+        const url = currentEditId ? `/api/users/${currentEditId}` : '/api/auth/register';
+
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          closeModal('userModal');
+          currentEditId = null;
+          e.target.reset();
+          loadUsers();
+        }
+      } catch (error) {
+        console.error('Error saving user:', error);
+      }
+    }
+
+    function openUserModal() {
+      currentEditId = null;
+      document.getElementById('userForm').reset();
+      document.querySelector('#userModal .modal-title').textContent = 'Add User';
+      openModal('userModal');
+    }
+
+    function editUser(id) {
+      currentEditId = id;
+      openModal('userModal');
+      document.querySelector('#userModal .modal-title').textContent = 'Edit User';
+    }
+
+    async function deleteUser(id) {
+      if (id === currentUser.id) {
+        alert('Cannot delete your own account');
+        return;
+      }
+
+      if (!confirm('Delete this user?')) return;
+
+      try {
+        const response = await fetch(`/api/users/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          loadUsers();
+        }
+      } catch (error) {
+        console.error('Error deleting user:', error);
+      }
+    }
+
+    // Modal Functions
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    // Close modal on outside click
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal')) {
+        e.target.classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>
